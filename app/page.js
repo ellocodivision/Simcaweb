@@ -30,7 +30,10 @@ export default function Home() {
             "PRECIO DE LISTA": row["PRECIO DE LISTA"] != null ? `$${parseInt(row["PRECIO DE LISTA"].toString().replace(/[$,]/g, ""))?.toLocaleString()}` : "",
             "DESCUENTO %": row["DESCUENTO %"] != null ? `${parseFloat(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1)}%` : "",
             "DESCUENTO $": row["DESCUENTO $"] != null ? `$${parseInt(row["DESCUENTO $"].toString().replace(/[$,]/g, ""))?.toLocaleString()}` : "",
-            "PRECIO FINAL": row["PRECIO FINAL"] != null ? `$${parseInt(row["PRECIO FINAL"].toString().replace(/[$,]/g, ""))?.toLocaleString()}` : ""
+            "PRECIO FINAL": row["PRECIO FINAL"] != null ? `$${parseInt(row["PRECIO FINAL"].toString().replace(/[$,]/g, ""))?.toLocaleString()}` : "",
+            precioListaNum: row["PRECIO DE LISTA"] != null ? parseInt(row["PRECIO DE LISTA"].toString().replace(/[$,]/g, "")) : 0,
+            descuentoNum: row["DESCUENTO $"] != null ? parseInt(row["DESCUENTO $"].toString().replace(/[$,]/g, "")) : 0,
+            precioFinalNum: row["PRECIO FINAL"] != null ? parseInt(row["PRECIO FINAL"].toString().replace(/[$,]/g, "")) : 0,
           }));
 
           setData(formattedData);
@@ -39,40 +42,8 @@ export default function Home() {
       });
   }, []);
 
-  // Definir rangos de precios correctamente
-  const priceRanges = {
-    "Todos": [0, Infinity],
-    "Hasta 200k": [0, 200000],
-    "200k - 300k": [200000, 300000],
-    "300k - 400k": [300000, 400000],
-    "400k - 600k": [400000, 600000],
-    "Más de 600k": [600000, Infinity]
-  };
-
-  // Definir orden fijo para Recámaras
-  const recamarasOrdenadas = ["Studio", "Loft", "1", "2", "3", "4"];
-
-  // 🔹 Filtrar opciones dinámicamente en base a selecciones previas
-  const desarrollosDisponibles = Array.from(new Set(data
-    .filter((d) => (ubicacion ? d.UBICACIÓN === ubicacion : true))
-    .map((d) => d.DESARROLLO)));
-
-  const recamarasDisponibles = Array.from(new Set(data
-    .filter((d) => (ubicacion ? d.UBICACIÓN === ubicacion : true) && (desarrollo ? d.DESARROLLO === desarrollo : true))
-    .map((d) => d.RECAMARAS.toString())));
-
-  // Filtrar datos según selecciones
-  const filteredData = data.filter((row) => {
-    const precioFinalNumerico = parseInt(row["PRECIO FINAL"].toString().replace(/[$,]/g, "")) || 0;
-
-    return (
-      (ubicacion === "" || row.UBICACIÓN === ubicacion) &&
-      (desarrollo === "" || row.DESARROLLO === desarrollo) &&
-      (recamaras === "" || row.RECAMARAS.toString() === recamaras) &&
-      (precioFinalNumerico >= priceRanges[precioFinal][0] &&
-      precioFinalNumerico <= priceRanges[precioFinal][1])
-    );
-  });
+  // Definir la función para ordenar correctamente los números en la tabla
+  const sortComparator = (a, b) => a - b;
 
   return (
     <Container>
@@ -80,47 +51,42 @@ export default function Home() {
         🏢 DESARROLLOS SIMCA - Inventario Online
       </Typography>
 
-      {/* Filtros */}
-      <div className="filters">
-        <Select value={ubicacion} onChange={(e) => setUbicacion(e.target.value)} displayEmpty>
-          <MenuItem value="">Filtrar por Ubicación</MenuItem>
-          {Array.from(new Set(data.map((d) => d.UBICACIÓN))).map((u) => (
-            <MenuItem key={u} value={u}>{u}</MenuItem>
-          ))}
-        </Select>
-
-        <Select value={desarrollo} onChange={(e) => setDesarrollo(e.target.value)} displayEmpty>
-          <MenuItem value="">Filtrar por Desarrollo</MenuItem>
-          {desarrollosDisponibles.map((d) => (
-            <MenuItem key={d} value={d}>{d}</MenuItem>
-          ))}
-        </Select>
-
-        <Select value={recamaras} onChange={(e) => setRecamaras(e.target.value)} displayEmpty>
-          <MenuItem value="">Filtrar por Recámaras</MenuItem>
-          {recamarasDisponibles.map((r) => (
-            <MenuItem key={r} value={r}>{r}</MenuItem>
-          ))}
-        </Select>
-
-        <Select value={precioFinal} onChange={(e) => setPrecioFinal(e.target.value)} displayEmpty>
-          {Object.keys(priceRanges).map((range) => (
-            <MenuItem key={range} value={range}>{range}</MenuItem>
-          ))}
-        </Select>
-      </div>
-
       {/* Tabla */}
       <DataGrid
-        rows={filteredData.map((row, index) => ({ id: index, ...row }))}
+        rows={data.map((row, index) => ({ id: index, ...row }))}
         columns={[
           { field: "DESARROLLO", headerName: "Desarrollo", flex: 1 },
           { field: "UNIDAD", headerName: "Unidad", flex: 1 },
           { field: "RECAMARAS", headerName: "Recámaras", flex: 1 },
-          { field: "PRECIO DE LISTA", headerName: "Precio de Lista", flex: 1 },
-          { field: "DESCUENTO %", headerName: "Descuento %", flex: 1 },
-          { field: "DESCUENTO $", headerName: "Descuento $", flex: 1 },
-          { field: "PRECIO FINAL", headerName: "Precio Final", flex: 1 },
+          { 
+            field: "PRECIO DE LISTA", 
+            headerName: "Precio de Lista", 
+            flex: 1,
+            sortComparator, // ✅ Ordena correctamente por número
+            valueGetter: (params) => params.row.precioListaNum, // ✅ Usa el número real para ordenar
+            renderCell: (params) => `$${params.row.precioListaNum.toLocaleString()}`
+          },
+          { 
+            field: "DESCUENTO %", 
+            headerName: "Descuento %", 
+            flex: 1 
+          },
+          { 
+            field: "DESCUENTO $", 
+            headerName: "Descuento $", 
+            flex: 1,
+            sortComparator, // ✅ Ordena correctamente por número
+            valueGetter: (params) => params.row.descuentoNum, // ✅ Usa el número real para ordenar
+            renderCell: (params) => `$${params.row.descuentoNum.toLocaleString()}`
+          },
+          { 
+            field: "PRECIO FINAL", 
+            headerName: "Precio Final", 
+            flex: 1,
+            sortComparator, // ✅ Ordena correctamente por número
+            valueGetter: (params) => params.row.precioFinalNum, // ✅ Usa el número real para ordenar
+            renderCell: (params) => `$${params.row.precioFinalNum.toLocaleString()}`
+          },
           { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 } // Última columna
         ]}
         pageSize={10}
