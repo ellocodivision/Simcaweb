@@ -1,13 +1,12 @@
 /* ✅ Cambiar el fondo con la imagen que subiste */
 body {
-  background-image: url("/tesst_page-0001.jpg"); /* Ruta relativa a la carpeta public */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  color: #333; /* Texto oscuro */
-  font-family: Arial, sans-serif;
-  padding: 20px;
+  background-image: url("/tesst_page-0001.jpg");
+  background-size: cover; /* La imagen se ajusta automáticamente al tamaño de la pantalla */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que se repita */
+  background-attachment: fixed; /* La imagen se mantiene fija al hacer scroll */
 }
+
 
 /* ✅ Estilo de filtros */
 .filters {
@@ -15,3 +14,6 @@ body {
   gap: 10px;
   margin-bottom: 20px;
 }
+
+
+
