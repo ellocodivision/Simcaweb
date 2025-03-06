@@ -28,7 +28,7 @@ export default function Home() {
             id: index,
             desarrollo: row["DESARROLLO"] || "",
             unidad: row["UNIDAD"] || "",
-            recamaras: row["RECAMARAS"] ? row["RECAMARAS"].toString() : "", // Convertir en string
+            recamaras: row["RECAMARAS"] ? row["RECAMARAS"].toString() : "",
             ubicacion: row["UBICACIÓN"] || "",
             precioLista: Math.round(Number(row["PRECIO DE LISTA"]?.toString().replace(/[$,]/g, "")) || 0),
             descuentoPorcentaje: row["DESCUENTO %"]
@@ -46,7 +46,6 @@ export default function Home() {
       .catch((error) => console.error("Error cargando el archivo:", error));
   }, []);
 
-  // 📌 Aplicar los filtros en cascada
   useEffect(() => {
     let filtered = data;
 
@@ -77,15 +76,6 @@ export default function Home() {
     setFilteredData(filtered);
   }, [ubicacionFilter, desarrolloFilter, recamarasFilter, precioFilter, data]);
 
-  // 📌 Obtener valores únicos en base a los filtros activos
-  const ubicacionesDisponibles = [...new Set(data.map((row) => row.ubicacion))];
-  const desarrollosDisponibles = [...new Set(filteredData.map((row) => row.desarrollo))];
-
-  // 📌 Asegurar que el filtro de Recámaras tenga los valores correctos
-  const allRecamaras = ["STUDIO", "LOFT", "1", "2", "3", "4"];
-  const recamarasDisponibles = allRecamaras.filter((r) => data.some((row) => row.recamaras === r));
-
-  // 📌 Función para quitar todos los filtros
   const resetFilters = () => {
     setUbicacionFilter("Todos");
     setDesarrolloFilter("Todos");
@@ -99,84 +89,19 @@ export default function Home() {
         🏢 DESARROLLOS SIMCA - Inventario Online
       </Typography>
 
-      {/* Filtros */}
-      <FormControl fullWidth style={{ marginBottom: "10px" }}>
-        <InputLabel>Filtrar por Ubicación</InputLabel>
-        <Select value={ubicacionFilter} onChange={(e) => setUbicacionFilter(e.target.value)}>
-          <MenuItem value="Todos">Todos</MenuItem>
-          {ubicacionesDisponibles.map((ubicacion) => (
-            <MenuItem key={ubicacion} value={ubicacion}>
-              {ubicacion}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <DataGrid rows={filteredData} columns={[{ field: "desarrollo", headerName: "Desarrollo", flex: 1 },{ field: "unidad", headerName: "Unidad", flex: 1 },{ field: "recamaras", headerName: "Recámaras", flex: 1 },{ field: "precioLista", headerName: "Precio de Lista", flex: 1, renderCell: (params) => `$${params.value.toLocaleString()}` },{ field: "descuentoPorcentaje", headerName: "Descuento %", flex: 1, renderCell: (params) => `${params.value}%` },{ field: "descuentoDinero", headerName: "Descuento $", flex: 1, renderCell: (params) => `$${params.value.toLocaleString()}` },{ field: "precioFinal", headerName: "Precio Final", flex: 1, renderCell: (params) => `$${params.value.toLocaleString()}` },{ field: "ubicacion", headerName: "Ubicación", flex: 1 }]} pageSize={10} autoHeight />
 
-      <FormControl fullWidth style={{ marginBottom: "10px" }}>
-        <InputLabel>Filtrar por Desarrollo</InputLabel>
-        <Select value={desarrolloFilter} onChange={(e) => setDesarrolloFilter(e.target.value)}>
-          <MenuItem value="Todos">Todos</MenuItem>
-          {desarrollosDisponibles.map((desarrollo) => (
-            <MenuItem key={desarrollo} value={desarrollo}>
-              {desarrollo}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth style={{ marginBottom: "10px" }}>
-        <InputLabel>Filtrar por Recámaras</InputLabel>
-        <Select value={recamarasFilter} onChange={(e) => setRecamarasFilter(e.target.value)}>
-          <MenuItem value="Todos">Todos</MenuItem>
-          {recamarasDisponibles.map((rec) => (
-            <MenuItem key={rec} value={rec}>
-              {rec}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth style={{ marginBottom: "10px" }}>
-        <InputLabel>Filtrar por Precio Final</InputLabel>
-        <Select value={precioFilter} onChange={(e) => setPrecioFilter(e.target.value)}>
-          <MenuItem value="Todos">Todos</MenuItem>
-          {["Hasta 200k", "200k - 300k", "300k - 400k", "400k - 600k", "Más de 600k"].map(
-            (precio) => (
-              <MenuItem key={precio} value={precio}>
-                {precio}
-              </MenuItem>
-            )
-          )}
-        </Select>
-      </FormControl>
-
-      {/* Botón para quitar filtros */}
-      <Button
-        variant="contained"
-        color="secondary"
-        fullWidth
-        style={{ marginBottom: "20px" }}
-        onClick={resetFilters}
-      >
-        Quitar filtros
-      </Button>
-
-      {/* Tabla */}
-      <DataGrid
-        rows={filteredData}
-        columns={[
-          { field: "desarrollo", headerName: "Desarrollo", flex: 1 },
-          { field: "unidad", headerName: "Unidad", flex: 1 },
-          { field: "recamaras", headerName: "Recámaras", flex: 1 },
-          { field: "precioLista", headerName: "Precio de Lista", flex: 1, type: "number", renderCell: (params) => `$${params.value.toLocaleString()}` },
-          { field: "descuentoPorcentaje", headerName: "Descuento %", flex: 1, type: "number", renderCell: (params) => `${params.value}%` },
-          { field: "descuentoDinero", headerName: "Descuento $", flex: 1, type: "number", renderCell: (params) => `$${params.value.toLocaleString()}` },
-          { field: "precioFinal", headerName: "Precio Final", flex: 1, type: "number", renderCell: (params) => `$${params.value.toLocaleString()}` },
-          { field: "ubicacion", headerName: "Ubicación", flex: 1 },
-        ]}
-        pageSize={10}
-        autoHeight
-      />
+      <Typography variant="h5" style={{ marginTop: "20px" }}>📌 PLAYA DEL CARMEN</Typography>
+      <ul>
+        <li><a href="https://drive.google.com/drive/folders/1wLmmckCcHJZpo4epx1wOL9y29ZVr1CRW?usp=drive_link">Ceiba - Drive</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1iZ6IGvc9g-N9bdQ62N7_XKWxtSWtEmHW?usp=drive_link">Cruz con Mar - Drive</a></li>
+      </ul>
+      <Typography variant="h5">📌 TULUM</Typography>
+      <ul>
+        <li><a href="https://drive.google.com/drive/folders/1Ka-9_TXx8hbKDNrtYM1A5iYCqvYyeNbI?usp=drive_link">Costa Caribe - Drive</a></li>
+      </ul>
+      <Typography variant="h5">📞 Contacto</Typography>
+      <a href="https://drive.google.com/file/d/1xzsKBinrBmRFkbZf0_L_rFIPr4FfRgx9/view?usp=drive_link">CONTACTO</a>
     </Container>
   );
 }
