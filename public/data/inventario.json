@@ -1,0 +1,16 @@
+[
+    {
+      "UBICACIÓN": "Playa del Carmen",
+      "DESARROLLO": "Ceiba",
+      "UNIDAD": "101",
+      "RECAMARAS": "2",
+      "PRECIO FINAL": "$200,000"
+    },
+    {
+      "UBICACIÓN": "Tulum",
+      "DESARROLLO": "Costa Caribe",
+      "UNIDAD": "202",
+      "RECAMARAS": "3",
+      "PRECIO FINAL": "$350,000"
+    }
+  ]
