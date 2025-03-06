@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { DataGrid } from "@mui/x-data-grid";
 import { Container, Typography, Select, MenuItem } from "@mui/material";
-import "./globals.css"; // ✅ Ruta correcta
+import "./globals.css"; // ✅ Importa estilos desde la carpeta correcta
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -23,14 +23,14 @@ export default function Home() {
           const sheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-          // ✅ Aplicar formato y manejar valores vacíos correctamente
+          // ✅ Convertir precios correctamente y eliminar caracteres extra
           const formattedData = jsonData.map((row, index) => ({
             id: index,
             ...row,
-            "PRECIO DE LISTA": row["PRECIO DE LISTA"] != null ? `$${parseInt(row["PRECIO DE LISTA"]).toLocaleString()}` : "",
+            "PRECIO DE LISTA": row["PRECIO DE LISTA"] != null ? `$${parseInt(row["PRECIO DE LISTA"].toString().replace(/[$,]/g, ""))?.toLocaleString()}` : "",
             "DESCUENTO %": row["DESCUENTO %"] != null ? `${parseFloat(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1)}%` : "",
-            "DESCUENTO $": row["DESCUENTO $"] != null ? `$${parseInt(row["DESCUENTO $"]).toLocaleString()}` : "",
-            "PRECIO FINAL": row["PRECIO FINAL"] != null ? `$${parseInt(row["PRECIO FINAL"]).toLocaleString()}` : ""
+            "DESCUENTO $": row["DESCUENTO $"] != null ? `$${parseInt(row["DESCUENTO $"].toString().replace(/[$,]/g, ""))?.toLocaleString()}` : "",
+            "PRECIO FINAL": row["PRECIO FINAL"] != null ? `$${parseInt(row["PRECIO FINAL"].toString().replace(/[$,]/g, ""))?.toLocaleString()}` : ""
           }));
 
           setData(formattedData);
@@ -39,7 +39,7 @@ export default function Home() {
       });
   }, []);
 
-  // Definir rangos de precios
+  // Definir rangos de precios correctamente
   const priceRanges = {
     "Todos": [0, Infinity],
     "Hasta 200k": [0, 200000],
@@ -52,19 +52,25 @@ export default function Home() {
   // Definir orden fijo para Recámaras
   const recamarasOrdenadas = ["Studio", "Loft", "1", "2", "3", "4"];
 
-  // 🔹 Filtrar desarrollos según la ubicación seleccionada
-  const desarrollosFiltrados = ubicacion
-    ? Array.from(new Set(data.filter((d) => d.UBICACIÓN === ubicacion).map((d) => d.DESARROLLO)))
-    : Array.from(new Set(data.map((d) => d.DESARROLLO)));
+  // 🔹 Filtrar opciones dinámicamente en base a selecciones previas
+  const desarrollosDisponibles = Array.from(new Set(data
+    .filter((d) => (ubicacion ? d.UBICACIÓN === ubicacion : true))
+    .map((d) => d.DESARROLLO)));
+
+  const recamarasDisponibles = Array.from(new Set(data
+    .filter((d) => (ubicacion ? d.UBICACIÓN === ubicacion : true) && (desarrollo ? d.DESARROLLO === desarrollo : true))
+    .map((d) => d.RECAMARAS.toString())));
 
   // Filtrar datos según selecciones
   const filteredData = data.filter((row) => {
+    const precioFinalNumerico = parseInt(row["PRECIO FINAL"].toString().replace(/[$,]/g, "")) || 0;
+
     return (
       (ubicacion === "" || row.UBICACIÓN === ubicacion) &&
       (desarrollo === "" || row.DESARROLLO === desarrollo) &&
       (recamaras === "" || row.RECAMARAS.toString() === recamaras) &&
-      (row["PRECIO FINAL"].replace("$", "").replace(",", "") >= priceRanges[precioFinal][0] &&
-      row["PRECIO FINAL"].replace("$", "").replace(",", "") <= priceRanges[precioFinal][1])
+      (precioFinalNumerico >= priceRanges[precioFinal][0] &&
+      precioFinalNumerico <= priceRanges[precioFinal][1])
     );
   });
 
@@ -85,14 +91,14 @@ export default function Home() {
 
         <Select value={desarrollo} onChange={(e) => setDesarrollo(e.target.value)} displayEmpty>
           <MenuItem value="">Filtrar por Desarrollo</MenuItem>
-          {desarrollosFiltrados.map((d) => (
+          {desarrollosDisponibles.map((d) => (
             <MenuItem key={d} value={d}>{d}</MenuItem>
           ))}
         </Select>
 
         <Select value={recamaras} onChange={(e) => setRecamaras(e.target.value)} displayEmpty>
           <MenuItem value="">Filtrar por Recámaras</MenuItem>
-          {recamarasOrdenadas.map((r) => (
+          {recamarasDisponibles.map((r) => (
             <MenuItem key={r} value={r}>{r}</MenuItem>
           ))}
         </Select>
