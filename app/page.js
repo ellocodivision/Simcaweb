@@ -7,10 +7,6 @@ import "./globals.css"; // ✅ Importa los estilos correctamente
 
 export default function Home() {
   const [data, setData] = useState([]);
-  const [ubicacion, setUbicacion] = useState("");
-  const [desarrollo, setDesarrollo] = useState("");
-  const [recamaras, setRecamaras] = useState("");
-  const [precioFinal, setPrecioFinal] = useState("Todos");
 
   useEffect(() => {
     fetch("/data/nuevo_inventario.xlsx")
@@ -55,7 +51,7 @@ export default function Home() {
 
       {/* Tabla */}
       <DataGrid
-        rows={data.map((row, index) => ({ id: index, ...row }))}
+        rows={data}
         columns={[
           { field: "DESARROLLO", headerName: "Desarrollo", flex: 1 },
           { field: "UNIDAD", headerName: "Unidad", flex: 1 },
@@ -64,9 +60,9 @@ export default function Home() {
             field: "PRECIO DE LISTA",
             headerName: "Precio de Lista",
             flex: 1,
-            sortComparator, // ✅ Ordena correctamente por número
-            valueGetter: (params) => params.row?.precioListaNum ?? 0, // ✅ Si es undefined, poner 0
-            renderCell: (params) => `$${(params.row?.precioListaNum || 0).toLocaleString()}`,
+            sortComparator,
+            valueGetter: (params) => (params.row ? params.row.precioListaNum ?? 0 : 0),
+            renderCell: (params) => (params.row ? `$${params.row.precioListaNum.toLocaleString()}` : ""),
           },
           {
             field: "DESCUENTO %",
@@ -77,17 +73,17 @@ export default function Home() {
             field: "DESCUENTO $",
             headerName: "Descuento $",
             flex: 1,
-            sortComparator, // ✅ Ordena correctamente por número
-            valueGetter: (params) => params.row?.descuentoNum ?? 0,
-            renderCell: (params) => `$${(params.row?.descuentoNum || 0).toLocaleString()}`,
+            sortComparator,
+            valueGetter: (params) => (params.row ? params.row.descuentoNum ?? 0 : 0),
+            renderCell: (params) => (params.row ? `$${params.row.descuentoNum.toLocaleString()}` : ""),
           },
           {
             field: "PRECIO FINAL",
             headerName: "Precio Final",
             flex: 1,
-            sortComparator, // ✅ Ordena correctamente por número
-            valueGetter: (params) => params.row?.precioFinalNum ?? 0,
-            renderCell: (params) => `$${(params.row?.precioFinalNum || 0).toLocaleString()}`,
+            sortComparator,
+            valueGetter: (params) => (params.row ? params.row.precioFinalNum ?? 0 : 0),
+            renderCell: (params) => (params.row ? `$${params.row.precioFinalNum.toLocaleString()}` : ""),
           },
           { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 }, // Última columna
         ]}
