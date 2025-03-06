@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { DataGrid } from "@mui/x-data-grid";
-import { Container, Typography, Select, MenuItem } from "@mui/material";
-import "./globals.css"; // ✅ Importa los estilos correctamente
+import { Container, Typography } from "@mui/material";
+import "./globals.css"; // ✅ Importa estilos correctamente
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -19,7 +19,7 @@ export default function Home() {
           const sheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-          // ✅ Convertir datos y validar valores para evitar undefined
+          // ✅ Convertir datos asegurando que nunca sean undefined o NaN
           const formattedData = jsonData.map((row, index) => ({
             id: index,
             ...row,
@@ -40,8 +40,8 @@ export default function Home() {
       });
   }, []);
 
-  // ✅ Ordenación correcta de valores numéricos
-  const sortComparator = (a, b) => a - b;
+  // ✅ Asegurar que los valores siempre existen
+  const safeGetter = (params, field) => params?.row?.[field] ?? 0;
 
   return (
     <Container>
@@ -60,9 +60,10 @@ export default function Home() {
             field: "PRECIO DE LISTA",
             headerName: "Precio de Lista",
             flex: 1,
-            sortComparator,
-            valueGetter: (params) => (params.row ? params.row.precioListaNum ?? 0 : 0),
-            renderCell: (params) => (params.row ? `$${params.row.precioListaNum.toLocaleString()}` : ""),
+            sortComparator: (a, b) => a - b,
+            valueGetter: (params) => safeGetter(params, "precioListaNum"),
+            renderCell: (params) =>
+              params.row ? `$${safeGetter(params, "precioListaNum").toLocaleString()}` : "",
           },
           {
             field: "DESCUENTO %",
@@ -73,17 +74,19 @@ export default function Home() {
             field: "DESCUENTO $",
             headerName: "Descuento $",
             flex: 1,
-            sortComparator,
-            valueGetter: (params) => (params.row ? params.row.descuentoNum ?? 0 : 0),
-            renderCell: (params) => (params.row ? `$${params.row.descuentoNum.toLocaleString()}` : ""),
+            sortComparator: (a, b) => a - b,
+            valueGetter: (params) => safeGetter(params, "descuentoNum"),
+            renderCell: (params) =>
+              params.row ? `$${safeGetter(params, "descuentoNum").toLocaleString()}` : "",
           },
           {
             field: "PRECIO FINAL",
             headerName: "Precio Final",
             flex: 1,
-            sortComparator,
-            valueGetter: (params) => (params.row ? params.row.precioFinalNum ?? 0 : 0),
-            renderCell: (params) => (params.row ? `$${params.row.precioFinalNum.toLocaleString()}` : ""),
+            sortComparator: (a, b) => a - b,
+            valueGetter: (params) => safeGetter(params, "precioFinalNum"),
+            renderCell: (params) =>
+              params.row ? `$${safeGetter(params, "precioFinalNum").toLocaleString()}` : "",
           },
           { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 }, // Última columna
         ]}
