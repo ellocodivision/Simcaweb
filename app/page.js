@@ -1,85 +1,110 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
-import { Container, Typography, Button, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import { useState, useEffect } from "react";
+import * as XLSX from "xlsx";
 import { DataGrid } from "@mui/x-data-grid";
+import { Container, Typography, MenuItem, Select, FormControl, InputLabel, Button } from "@mui/material";
+import "./globals.css";
 
 export default function Home() {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [ubicaciones, setUbicaciones] = useState([]);
-  const [desarrollos, setDesarrollos] = useState([]);
-  const [recamaras, setRecamaras] = useState([]);
-  const [selectedUbicacion, setSelectedUbicacion] = useState("Todos");
-  const [selectedDesarrollo, setSelectedDesarrollo] = useState("Todos");
-  const [selectedRecamaras, setSelectedRecamaras] = useState("Todos");
+  const [ubicacionFilter, setUbicacionFilter] = useState("Todos");
+  const [desarrolloFilter, setDesarrolloFilter] = useState("Todos");
+  const [recamarasFilter, setRecamarasFilter] = useState("Todos");
+  const [precioFilter, setPrecioFilter] = useState("Todos");
 
   useEffect(() => {
-    fetch("/data/inventario.json")
-      .then((response) => response.json())
-      .then((jsonData) => {
-        const formattedData = jsonData.map((row, index) => ({
-          id: index,
-          ...row,
-          precioListaNum: Number(row["PRECIO DE LISTA"].replace(/[^0-9.-]+/g, "")),
-          descuentoNum: Number(row["DESCUENTO $"].replace(/[^0-9.-]+/g, "")),
-          precioFinalNum: Number(row["PRECIO FINAL"].replace(/[^0-9.-]+/g, ""))
-        }));
+    fetch("/data/nuevo_inventario.xlsx")
+      .then((response) => response.blob())
+      .then((blob) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const workbook = XLSX.read(e.target.result, { type: "binary" });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-        setData(formattedData);
-        setFilteredData(formattedData);
+          const formattedData = jsonData.map((row, index) => ({
+            id: index,
+            desarrollo: row["DESARROLLO"] || "",
+            unidad: row["UNIDAD"] || "",
+            recamaras: row["RECAMARAS"] ? row["RECAMARAS"].toString() : "", // Convertir en string
+            ubicacion: row["UBICACIÓN"] || "",
+            precioLista: Math.round(Number(row["PRECIO DE LISTA"]?.toString().replace(/[$,]/g, "")) || 0),
+            descuentoPorcentaje: row["DESCUENTO %"]
+              ? Math.round(Number(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1))
+              : 0,
+            descuentoDinero: Math.round(Number(row["DESCUENTO $"]?.toString().replace(/[$,]/g, "")) || 0),
+            precioFinal: Math.round(Number(row["PRECIO FINAL"]?.toString().replace(/[$,]/g, "")) || 0),
+          }));
 
-        setUbicaciones(["Todos", ...new Set(formattedData.map((item) => item["UBICACIÓN"]))]);
-        setDesarrollos(["Todos", ...new Set(formattedData.map((item) => item["DESARROLLO"]))]);
-        setRecamaras(["Todos", "STUDIO", "LOFT", "1", "2", "3", "4"]);
-      });
+          setData(formattedData);
+          setFilteredData(formattedData);
+        };
+        reader.readAsBinaryString(blob);
+      })
+      .catch((error) => console.error("Error cargando el archivo:", error));
   }, []);
 
+  // 📌 Aplicar los filtros en cascada
   useEffect(() => {
     let filtered = data;
 
-    if (selectedUbicacion !== "Todos") {
-      filtered = filtered.filter((item) => item["UBICACIÓN"] === selectedUbicacion);
+    if (ubicacionFilter !== "Todos") {
+      filtered = filtered.filter((row) => row.ubicacion === ubicacionFilter);
     }
-
-    if (selectedDesarrollo !== "Todos") {
-      filtered = filtered.filter((item) => item["DESARROLLO"] === selectedDesarrollo);
+    if (desarrolloFilter !== "Todos") {
+      filtered = filtered.filter((row) => row.desarrollo === desarrolloFilter);
     }
-
-    if (selectedRecamaras !== "Todos") {
-      filtered = filtered.filter((item) => item["RECAMARAS"] === selectedRecamaras);
+    if (recamarasFilter !== "Todos") {
+      filtered = filtered.filter((row) => row.recamaras === recamarasFilter);
+    }
+    if (precioFilter !== "Todos") {
+      const priceRanges = {
+        "Hasta 200k": [0, 200000],
+        "200k - 300k": [200000, 300000],
+        "300k - 400k": [300000, 400000],
+        "400k - 600k": [400000, 600000],
+        "Más de 600k": [600000, Infinity],
+      };
+      filtered = filtered.filter(
+        (row) =>
+          row.precioFinal >= priceRanges[precioFilter][0] &&
+          row.precioFinal <= priceRanges[precioFilter][1]
+      );
     }
 
     setFilteredData(filtered);
-  }, [selectedUbicacion, selectedDesarrollo, selectedRecamaras, data]);
+  }, [ubicacionFilter, desarrolloFilter, recamarasFilter, precioFilter, data]);
 
-  const handleResetFilters = () => {
-    setSelectedUbicacion("Todos");
-    setSelectedDesarrollo("Todos");
-    setSelectedRecamaras("Todos");
+  // 📌 Obtener valores únicos en base a los filtros activos
+  const ubicacionesDisponibles = [...new Set(data.map((row) => row.ubicacion))];
+  const desarrollosDisponibles = [...new Set(filteredData.map((row) => row.desarrollo))];
+
+  // 📌 Asegurar que el filtro de Recámaras tenga los valores correctos
+  const allRecamaras = ["STUDIO", "LOFT", "1", "2", "3", "4"];
+  const recamarasDisponibles = allRecamaras.filter((r) => data.some((row) => row.recamaras === r));
+
+  // 📌 Función para quitar todos los filtros
+  const resetFilters = () => {
+    setUbicacionFilter("Todos");
+    setDesarrolloFilter("Todos");
+    setRecamarasFilter("Todos");
+    setPrecioFilter("Todos");
   };
-
-  const columns = [
-    { field: "DESARROLLO", headerName: "Desarrollo", flex: 1 },
-    { field: "UNIDAD", headerName: "Unidad", flex: 1 },
-    { field: "RECAMARAS", headerName: "Recámaras", flex: 1 },
-    { field: "PRECIO DE LISTA", headerName: "Precio de Lista", flex: 1, valueGetter: (params) => `$${params.row.precioListaNum.toLocaleString()}` },
-    { field: "DESCUENTO %", headerName: "Descuento %", flex: 1, valueGetter: (params) => `${params.row["DESCUENTO %"] || ""}%` },
-    { field: "DESCUENTO $", headerName: "Descuento $", flex: 1, valueGetter: (params) => params.row.descuentoNum ? `$${params.row.descuentoNum.toLocaleString()}` : "" },
-    { field: "PRECIO FINAL", headerName: "Precio Final", flex: 1, valueGetter: (params) => params.row.precioFinalNum ? `$${params.row.precioFinalNum.toLocaleString()}` : "" },
-    { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 }
-  ];
 
   return (
     <Container>
-      <Typography variant="h4" align="center" gutterBottom>
+      <Typography variant="h4" gutterBottom>
         🏢 DESARROLLOS SIMCA - Inventario Online
       </Typography>
 
-      <FormControl fullWidth margin="normal">
+      {/* Filtros */}
+      <FormControl fullWidth style={{ marginBottom: "10px" }}>
         <InputLabel>Filtrar por Ubicación</InputLabel>
-        <Select value={selectedUbicacion} onChange={(e) => setSelectedUbicacion(e.target.value)}>
-          {ubicaciones.map((ubicacion) => (
+        <Select value={ubicacionFilter} onChange={(e) => setUbicacionFilter(e.target.value)}>
+          <MenuItem value="Todos">Todos</MenuItem>
+          {ubicacionesDisponibles.map((ubicacion) => (
             <MenuItem key={ubicacion} value={ubicacion}>
               {ubicacion}
             </MenuItem>
@@ -87,10 +112,11 @@ export default function Home() {
         </Select>
       </FormControl>
 
-      <FormControl fullWidth margin="normal">
+      <FormControl fullWidth style={{ marginBottom: "10px" }}>
         <InputLabel>Filtrar por Desarrollo</InputLabel>
-        <Select value={selectedDesarrollo} onChange={(e) => setSelectedDesarrollo(e.target.value)}>
-          {desarrollos.map((desarrollo) => (
+        <Select value={desarrolloFilter} onChange={(e) => setDesarrolloFilter(e.target.value)}>
+          <MenuItem value="Todos">Todos</MenuItem>
+          {desarrollosDisponibles.map((desarrollo) => (
             <MenuItem key={desarrollo} value={desarrollo}>
               {desarrollo}
             </MenuItem>
@@ -98,10 +124,11 @@ export default function Home() {
         </Select>
       </FormControl>
 
-      <FormControl fullWidth margin="normal">
+      <FormControl fullWidth style={{ marginBottom: "10px" }}>
         <InputLabel>Filtrar por Recámaras</InputLabel>
-        <Select value={selectedRecamaras} onChange={(e) => setSelectedRecamaras(e.target.value)}>
-          {recamaras.map((rec) => (
+        <Select value={recamarasFilter} onChange={(e) => setRecamarasFilter(e.target.value)}>
+          <MenuItem value="Todos">Todos</MenuItem>
+          {recamarasDisponibles.map((rec) => (
             <MenuItem key={rec} value={rec}>
               {rec}
             </MenuItem>
@@ -109,32 +136,47 @@ export default function Home() {
         </Select>
       </FormControl>
 
-      <Button variant="contained" color="secondary" onClick={handleResetFilters} style={{ marginBottom: "10px" }}>
+      <FormControl fullWidth style={{ marginBottom: "10px" }}>
+        <InputLabel>Filtrar por Precio Final</InputLabel>
+        <Select value={precioFilter} onChange={(e) => setPrecioFilter(e.target.value)}>
+          <MenuItem value="Todos">Todos</MenuItem>
+          {["Hasta 200k", "200k - 300k", "300k - 400k", "400k - 600k", "Más de 600k"].map(
+            (precio) => (
+              <MenuItem key={precio} value={precio}>
+                {precio}
+              </MenuItem>
+            )
+          )}
+        </Select>
+      </FormControl>
+
+      {/* Botón para quitar filtros */}
+      <Button
+        variant="contained"
+        color="secondary"
+        fullWidth
+        style={{ marginBottom: "20px" }}
+        onClick={resetFilters}
+      >
         Quitar filtros
       </Button>
 
-      <DataGrid rows={filteredData} columns={columns} autoHeight pageSizeOptions={[10, 25, 50, 100]} />
-
-      {/* Sección de Enlaces */}
-      <Typography variant="h5" style={{ marginTop: "20px" }}>📍 PLAYA DEL CARMEN</Typography>
-      <Typography>
-        <a href="https://drive.google.com/drive/folders/1wLmmckCcHJZpo4epx1wOL9y29ZVr1CRW?usp=drive_link">Ceiba - Drive</a><br />
-        <a href="https://drive.google.com/drive/folders/1iZ6IGvc9g-N9bdQ62N7_XKWxtSWtEmHW?usp=drive_link">Cruz con Mar - Drive</a><br />
-        <a href="https://drive.google.com/drive/folders/1iYveTUNluxpXMXIzNkrTM1DotXeb_y2D?usp=drive_link">Ipana - Drive</a><br />
-        <a href="https://drive.google.com/drive/folders/12yciY02hANBw9m6bk80IeA9pLeAyNZtt?usp=drive_link">Maresol - Drive</a><br />
-      </Typography>
-
-      <Typography variant="h5" style={{ marginTop: "20px" }}>📍 TULUM</Typography>
-      <Typography>
-        <a href="https://drive.google.com/drive/folders/1Ka-9_TXx8hbKDNrtYM1A5iYCqvYyeNbI?usp=drive_link">Costa Caribe - Drive</a><br />
-        <a href="https://drive.google.com/drive/folders/1HMDG7UBljBe9GwYwtvW8ZjmJpwylTca5?usp=drive_link">Gran Tulum - Drive</a><br />
-        <a href="https://drive.google.com/drive/folders/1CX-qEyXVi_RqmRoeFl-Tq0sVNfKEUtrw?usp=drive_link">Natal - Drive</a><br />
-      </Typography>
-
-      <Typography variant="h5" style={{ marginTop: "20px" }}>📞 Contacto</Typography>
-      <Typography>
-        <a href="https://drive.google.com/file/d/1xzsKBinrBmRFkbZf0_L_rFIPr4FfRgx9/view?usp=drive_link">CONTACTO</a>
-      </Typography>
+      {/* Tabla */}
+      <DataGrid
+        rows={filteredData}
+        columns={[
+          { field: "desarrollo", headerName: "Desarrollo", flex: 1 },
+          { field: "unidad", headerName: "Unidad", flex: 1 },
+          { field: "recamaras", headerName: "Recámaras", flex: 1 },
+          { field: "precioLista", headerName: "Precio de Lista", flex: 1, type: "number", renderCell: (params) => `$${params.value.toLocaleString()}` },
+          { field: "descuentoPorcentaje", headerName: "Descuento %", flex: 1, type: "number", renderCell: (params) => `${params.value}%` },
+          { field: "descuentoDinero", headerName: "Descuento $", flex: 1, type: "number", renderCell: (params) => `$${params.value.toLocaleString()}` },
+          { field: "precioFinal", headerName: "Precio Final", flex: 1, type: "number", renderCell: (params) => `$${params.value.toLocaleString()}` },
+          { field: "ubicacion", headerName: "Ubicación", flex: 1 },
+        ]}
+        pageSize={10}
+        autoHeight
+      />
     </Container>
   );
 }
