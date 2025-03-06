@@ -19,21 +19,21 @@ export default function Home() {
           const sheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-          // ✅ Convertir valores a números asegurando que no sean NaN
+          // ✅ Convertir valores asegurando que no sean NaN
           const formattedData = jsonData.map((row, index) => ({
             id: index,
             ...row,
             precioListaNum: row["PRECIO DE LISTA"]
-              ? Number(row["PRECIO DE LISTA"].toString().replace(/[$,]/g, "")) || 0
+              ? Math.round(Number(row["PRECIO DE LISTA"].toString().replace(/[$,]/g, ""))) || 0
               : 0,
             descuentoNum: row["DESCUENTO $"]
-              ? Number(row["DESCUENTO $"].toString().replace(/[$,]/g, "")) || 0
+              ? Math.round(Number(row["DESCUENTO $"].toString().replace(/[$,]/g, ""))) || 0
               : 0,
             precioFinalNum: row["PRECIO FINAL"]
-              ? Number(row["PRECIO FINAL"].toString().replace(/[$,]/g, "")) || 0
+              ? Math.round(Number(row["PRECIO FINAL"].toString().replace(/[$,]/g, ""))) || 0
               : 0,
             descuentoPorcentaje: row["DESCUENTO %"]
-              ? Number(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1)
+              ? Math.round(Number(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1))
               : 0, // ✅ Convierte 0.1 en 10%
           }));
 
@@ -60,7 +60,7 @@ export default function Home() {
             field: "PRECIO DE LISTA",
             headerName: "Precio de Lista",
             flex: 1,
-            type: "number", // ✅ Indica que es numérico para ordenación correcta
+            type: "number", // ✅ Se asegura que sea numérico para ordenar bien
             valueGetter: (params) => params.row?.precioListaNum ?? 0,
             renderCell: (params) =>
               params.row ? `$${params.row.precioListaNum.toLocaleString()}` : "",
@@ -72,13 +72,13 @@ export default function Home() {
             type: "number", // ✅ Asegura ordenación correcta
             valueGetter: (params) => params.row?.descuentoPorcentaje ?? 0,
             renderCell: (params) =>
-              params.row ? `${params.row.descuentoPorcentaje.toFixed(0)}%` : "",
+              params.row ? `${params.row.descuentoPorcentaje}%` : "",
           },
           {
             field: "DESCUENTO $",
             headerName: "Descuento $",
             flex: 1,
-            type: "number", // ✅ Asegura que se ordene correctamente
+            type: "number", // ✅ Se asegura que sea numérico para ordenar bien
             valueGetter: (params) => params.row?.descuentoNum ?? 0,
             renderCell: (params) =>
               params.row ? `$${params.row.descuentoNum.toLocaleString()}` : "",
@@ -87,7 +87,7 @@ export default function Home() {
             field: "PRECIO FINAL",
             headerName: "Precio Final",
             flex: 1,
-            type: "number", // ✅ Asegura que se ordene correctamente
+            type: "number", // ✅ Se asegura que sea numérico para ordenar bien
             valueGetter: (params) => params.row?.precioFinalNum ?? 0,
             renderCell: (params) =>
               params.row ? `$${params.row.precioFinalNum.toLocaleString()}` : "",
