@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { DataGrid } from "@mui/x-data-grid";
-import { Container, Typography, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import { Container, Typography, MenuItem, Select, FormControl, InputLabel, Button } from "@mui/material";
 import "./globals.css";
 
 export default function Home() {
@@ -86,6 +86,14 @@ export default function Home() {
     ...new Set(filteredData.map((row) => row.recamaras)),
   ];
 
+  // 📌 Función para quitar todos los filtros
+  const resetFilters = () => {
+    setUbicacionFilter("Todos");
+    setDesarrolloFilter("Todos");
+    setRecamarasFilter("Todos");
+    setPrecioFilter("Todos");
+  };
+
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
@@ -143,6 +151,17 @@ export default function Home() {
         </Select>
       </FormControl>
 
+      {/* Botón para quitar filtros */}
+      <Button
+        variant="contained"
+        color="secondary"
+        fullWidth
+        style={{ marginBottom: "20px" }}
+        onClick={resetFilters}
+      >
+        Quitar filtros
+      </Button>
+
       {/* Tabla */}
       <DataGrid
         rows={filteredData}
@@ -155,7 +174,7 @@ export default function Home() {
             headerName: "Precio de Lista",
             flex: 1,
             type: "number",
-            renderCell: (params) => `$${params.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
+            renderCell: (params) => `$${params.value.toLocaleString()}`,
           },
           {
             field: "descuentoPorcentaje",
@@ -169,7 +188,7 @@ export default function Home() {
             headerName: "Descuento $",
             flex: 1,
             type: "number",
-            renderCell: (params) => `$${params.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
+            renderCell: (params) => `$${params.value.toLocaleString()}`,
           },
           { field: "ubicacion", headerName: "Ubicación", flex: 1 },
         ]}
