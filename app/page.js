@@ -96,7 +96,7 @@ export default function Home() {
         <li><a href="https://drive.google.com/drive/folders/1wLmmckCcHJZpo4epx1wOL9y29ZVr1CRW?usp=drive_link">Ceiba - Drive</a></li>
         <li><a href="https://drive.google.com/drive/folders/1iZ6IGvc9g-N9bdQ62N7_XKWxtSWtEmHW?usp=drive_link">Cruz con Mar - Drive</a></li>
         <li><a href="https://drive.google.com/drive/folders/1iYveTUNluxpXMXIzNkrTM1DotXeb_y2D?usp=drive_link">Ipana - Drive</a></li>
-        <li><a href="(https://drive.google.com/drive/folders/12yciY02hANBw9m6bk80IeA9pLeAyNZtt?usp=drive_link">Maresol - Drive</a></li>
+        <li><a href="https://drive.google.com/drive/folders/12yciY02hANBw9m6bk80IeA9pLeAyNZtt?usp=drive_link">Maresol - Drive</a></li>
         <li><a href="https://drive.google.com/drive/folders/1iP7Qeq2sYPf1sTOs85OHs3wNpGqFaWtk?usp=drive_link">Marila - Drive</a></li>
         <li><a href="https://drive.google.com/drive/folders/1aBGyq-HYte_2NeShwYZNvBwOaNgkhJGQ?usp=drive_link">Saint Marine - Drive</a></li>
         <li><a href="https://drive.google.com/drive/folders/1iLgemRqqQEcayfTbZjfWr4jkumvj_797?usp=drive_link">Serenada - Drive</a></li>
