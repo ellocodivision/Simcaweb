@@ -19,7 +19,7 @@ export default function Home() {
           const sheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-          // ✅ Convertir valores asegurando que no sean NaN
+          // ✅ Convertir valores asegurando que no sean NaN o undefined
           const formattedData = jsonData.map((row, index) => ({
             id: index,
             ...row,
@@ -40,7 +40,8 @@ export default function Home() {
           setData(formattedData);
         };
         reader.readAsBinaryString(blob);
-      });
+      })
+      .catch((error) => console.error("Error cargando el archivo:", error));
   }, []);
 
   return (
@@ -60,39 +61,47 @@ export default function Home() {
             field: "PRECIO DE LISTA",
             headerName: "Precio de Lista",
             flex: 1,
-            type: "number", // ✅ Se asegura que sea numérico para ordenar bien
-            valueGetter: (params) => params.row?.precioListaNum ?? 0,
+            type: "number",
+            valueGetter: (params) => params?.row?.precioListaNum ?? 0, // ✅ Evita error en filas vacías
             renderCell: (params) =>
-              params.row ? `$${params.row.precioListaNum.toLocaleString()}` : "",
+              params.row && params.row.precioListaNum !== undefined
+                ? `$${params.row.precioListaNum.toLocaleString()}`
+                : "",
           },
           {
             field: "DESCUENTO %",
             headerName: "Descuento %",
             flex: 1,
-            type: "number", // ✅ Asegura ordenación correcta
-            valueGetter: (params) => params.row?.descuentoPorcentaje ?? 0,
+            type: "number",
+            valueGetter: (params) => params?.row?.descuentoPorcentaje ?? 0, // ✅ Evita error
             renderCell: (params) =>
-              params.row ? `${params.row.descuentoPorcentaje}%` : "",
+              params.row && params.row.descuentoPorcentaje !== undefined
+                ? `${params.row.descuentoPorcentaje}%`
+                : "",
           },
           {
             field: "DESCUENTO $",
             headerName: "Descuento $",
             flex: 1,
-            type: "number", // ✅ Se asegura que sea numérico para ordenar bien
-            valueGetter: (params) => params.row?.descuentoNum ?? 0,
+            type: "number",
+            valueGetter: (params) => params?.row?.descuentoNum ?? 0, // ✅ Evita error
             renderCell: (params) =>
-              params.row ? `$${params.row.descuentoNum.toLocaleString()}` : "",
+              params.row && params.row.descuentoNum !== undefined
+                ? `$${params.row.descuentoNum.toLocaleString()}`
+                : "",
           },
           {
             field: "PRECIO FINAL",
             headerName: "Precio Final",
             flex: 1,
-            type: "number", // ✅ Se asegura que sea numérico para ordenar bien
-            valueGetter: (params) => params.row?.precioFinalNum ?? 0,
+            type: "number",
+            valueGetter: (params) => params?.row?.precioFinalNum ?? 0, // ✅ Evita error
             renderCell: (params) =>
-              params.row ? `$${params.row.precioFinalNum.toLocaleString()}` : "",
+              params.row && params.row.precioFinalNum !== undefined
+                ? `$${params.row.precioFinalNum.toLocaleString()}`
+                : "",
           },
-          { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 }, // Última columna
+          { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 },
         ]}
         pageSize={10}
         autoHeight
