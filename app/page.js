@@ -30,12 +30,12 @@ export default function Home() {
             unidad: row["UNIDAD"] || "",
             recamaras: row["RECAMARAS"] || "",
             ubicacion: row["UBICACIÓN"] || "",
-            precioLista: Number(row["PRECIO DE LISTA"]?.toString().replace(/[$,]/g, "")) || 0,
+            precioLista: Math.round(Number(row["PRECIO DE LISTA"]?.toString().replace(/[$,]/g, "")) || 0),
             descuentoPorcentaje: row["DESCUENTO %"]
               ? Math.round(Number(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1))
               : 0,
-            descuentoDinero: Number(row["DESCUENTO $"]?.toString().replace(/[$,]/g, "")) || 0,
-            precioFinal: Number(row["PRECIO FINAL"]?.toString().replace(/[$,]/g, "")) || 0,
+            descuentoDinero: Math.round(Number(row["DESCUENTO $"]?.toString().replace(/[$,]/g, "")) || 0),
+            precioFinal: Math.round(Number(row["PRECIO FINAL"]?.toString().replace(/[$,]/g, "")) || 0),
           }));
 
           setData(formattedData);
@@ -82,9 +82,11 @@ export default function Home() {
   const desarrollosDisponibles = [
     ...new Set(filteredData.map((row) => row.desarrollo)),
   ];
-  const recamarasDisponibles = [
-    ...new Set(filteredData.map((row) => row.recamaras)),
-  ];
+
+  // 📌 Ordenar Recámaras en el orden definido: STUDIO, LOFT, 1, 2, 3, 4
+  const recamarasDisponibles = ["STUDIO", "LOFT", "1", "2", "3", "4"].filter((r) =>
+    filteredData.some((row) => row.recamaras === r)
+  );
 
   // 📌 Función para quitar todos los filtros
   const resetFilters = () => {
@@ -169,27 +171,7 @@ export default function Home() {
           { field: "desarrollo", headerName: "Desarrollo", flex: 1 },
           { field: "unidad", headerName: "Unidad", flex: 1 },
           { field: "recamaras", headerName: "Recámaras", flex: 1 },
-          {
-            field: "precioLista",
-            headerName: "Precio de Lista",
-            flex: 1,
-            type: "number",
-            renderCell: (params) => `$${params.value.toLocaleString()}`,
-          },
-          {
-            field: "descuentoPorcentaje",
-            headerName: "Descuento %",
-            flex: 1,
-            type: "number",
-            renderCell: (params) => `${params.value}%`,
-          },
-          {
-            field: "descuentoDinero",
-            headerName: "Descuento $",
-            flex: 1,
-            type: "number",
-            renderCell: (params) => `$${params.value.toLocaleString()}`,
-          },
+          { field: "precioFinal", headerName: "Precio Final", flex: 1, type: "number", renderCell: (params) => `$${params.value.toLocaleString()}` },
           { field: "ubicacion", headerName: "Ubicación", flex: 1 },
         ]}
         pageSize={10}
