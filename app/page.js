@@ -95,32 +95,19 @@ export default function Home() {
       <ul>
         <li><a href="https://drive.google.com/drive/folders/1wLmmckCcHJZpo4epx1wOL9y29ZVr1CRW?usp=drive_link">Ceiba - Drive</a></li>
         <li><a href="https://drive.google.com/drive/folders/1iZ6IGvc9g-N9bdQ62N7_XKWxtSWtEmHW?usp=drive_link">Cruz con Mar - Drive</a></li>
-      </ul>
         <li><a href="https://drive.google.com/drive/folders/1iYveTUNluxpXMXIzNkrTM1DotXeb_y2D?usp=drive_link">Ipana - Drive</a></li>
-      </ul>
         <li><a href="(https://drive.google.com/drive/folders/12yciY02hANBw9m6bk80IeA9pLeAyNZtt?usp=drive_link">Maresol - Drive</a></li>
-      </ul>
         <li><a href="https://drive.google.com/drive/folders/1iP7Qeq2sYPf1sTOs85OHs3wNpGqFaWtk?usp=drive_link">Marila - Drive</a></li>
-      </ul>
         <li><a href="https://drive.google.com/drive/folders/1aBGyq-HYte_2NeShwYZNvBwOaNgkhJGQ?usp=drive_link">Saint Marine - Drive</a></li>
-      </ul>
         <li><a href="https://drive.google.com/drive/folders/1iLgemRqqQEcayfTbZjfWr4jkumvj_797?usp=drive_link">Serenada - Drive</a></li>
-      </ul>
-        <li><a href="    <li><a href="https://drive.google.com/drive/folders/1iLgemRqqQEcayfTbZjfWr4jkumvj_797?usp=drive_link">Serenada - Drive</a></li>
-      </ul>
-        <li><a href="https://drive.google.com/drive/folders/1iLgemRqqQEcayfTbZjfWr4jkumvj_797?usp=drive_link">Serenada - Drive</a></li>
-      </ul>">Singular Joy - Drive</a></li>
-      </ul>
+        <li><a href="https://drive.google.com/drive/folders/1gNjYsbSaZbDwH_51Xp7d6Wwsn6rIhRDy?usp=drive_link">Singular Joy - Drive</a></li>
         <li><a href="https://drive.google.com/drive/folders/1-1vnJQG2totiL_odvm_CJoNCp6GvVZF6?usp=drive_link">Solar estudios - Drive</a></li>
-      </ul>
         <li><a href="https://drive.google.com/drive/folders/1CkeGNWApzo3Dwsh5JsBgXVrYtjfo6EfL?usp=drive_link">Solar midtown - Drive</a></li>
       </ul>
       <Typography variant="h5">📌 TULUM</Typography>
       <ul>
         <li><a href="https://drive.google.com/drive/folders/1Ka-9_TXx8hbKDNrtYM1A5iYCqvYyeNbI?usp=drive_link">Costa Caribe - Drive</a></li>
-      </ul>
         <li><a href="https://drive.google.com/drive/folders/1Ka-9_TXx8hbKDNrtYM1A5iYCqvYyeNbI?usp=drive_link">Gran Tulum - Drive</a></li>
-      </ul>
         <li><a href="https://drive.google.com/drive/folders/1CX-qEyXVi_RqmRoeFl-Tq0sVNfKEUtrw?usp=drive_link">Natal - Drive</a></li>
       </ul>
       <Typography variant="h5">📞 Contacto</Typography>
