@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { DataGrid } from "@mui/x-data-grid";
 import { Container, Typography } from "@mui/material";
-import "./globals.css"; // ✅ Importa estilos correctamente
+import "./globals.css"; // ✅ Asegurar que este archivo exista
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -19,22 +19,19 @@ export default function Home() {
           const sheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-          // ✅ Convertir valores asegurando que no sean NaN o undefined
+          // ✅ Formateamos los datos para evitar errores
           const formattedData = jsonData.map((row, index) => ({
             id: index,
-            ...row,
-            precioListaNum: row["PRECIO DE LISTA"]
-              ? Math.round(Number(row["PRECIO DE LISTA"].toString().replace(/[$,]/g, ""))) || 0
-              : 0,
-            descuentoNum: row["DESCUENTO $"]
-              ? Math.round(Number(row["DESCUENTO $"].toString().replace(/[$,]/g, ""))) || 0
-              : 0,
-            precioFinalNum: row["PRECIO FINAL"]
-              ? Math.round(Number(row["PRECIO FINAL"].toString().replace(/[$,]/g, ""))) || 0
-              : 0,
+            desarrollo: row["DESARROLLO"] || "",
+            unidad: row["UNIDAD"] || "",
+            recamaras: row["RECAMARAS"] || "",
+            ubicacion: row["UBICACIÓN"] || "",
+            precioLista: Number(row["PRECIO DE LISTA"]?.toString().replace(/[$,]/g, "")) || 0,
             descuentoPorcentaje: row["DESCUENTO %"]
               ? Math.round(Number(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1))
-              : 0, // ✅ Convierte 0.1 en 10%
+              : 0,
+            descuentoDinero: Number(row["DESCUENTO $"]?.toString().replace(/[$,]/g, "")) || 0,
+            precioFinal: Number(row["PRECIO FINAL"]?.toString().replace(/[$,]/g, "")) || 0,
           }));
 
           setData(formattedData);
@@ -54,54 +51,42 @@ export default function Home() {
       <DataGrid
         rows={data}
         columns={[
-          { field: "DESARROLLO", headerName: "Desarrollo", flex: 1 },
-          { field: "UNIDAD", headerName: "Unidad", flex: 1 },
-          { field: "RECAMARAS", headerName: "Recámaras", flex: 1 },
+          { field: "desarrollo", headerName: "Desarrollo", flex: 1 },
+          { field: "unidad", headerName: "Unidad", flex: 1 },
+          { field: "recamaras", headerName: "Recámaras", flex: 1 },
           {
-            field: "PRECIO DE LISTA",
+            field: "precioLista",
             headerName: "Precio de Lista",
             flex: 1,
             type: "number",
-            valueGetter: (params) => params?.row?.precioListaNum ?? 0, // ✅ Evita error en filas vacías
             renderCell: (params) =>
-              params.row && params.row.precioListaNum !== undefined
-                ? `$${params.row.precioListaNum.toLocaleString()}`
-                : "",
+              params.value ? `$${params.value.toLocaleString()}` : "",
           },
           {
-            field: "DESCUENTO %",
+            field: "descuentoPorcentaje",
             headerName: "Descuento %",
             flex: 1,
             type: "number",
-            valueGetter: (params) => params?.row?.descuentoPorcentaje ?? 0, // ✅ Evita error
             renderCell: (params) =>
-              params.row && params.row.descuentoPorcentaje !== undefined
-                ? `${params.row.descuentoPorcentaje}%`
-                : "",
+              params.value !== undefined ? `${params.value}%` : "",
           },
           {
-            field: "DESCUENTO $",
+            field: "descuentoDinero",
             headerName: "Descuento $",
             flex: 1,
             type: "number",
-            valueGetter: (params) => params?.row?.descuentoNum ?? 0, // ✅ Evita error
             renderCell: (params) =>
-              params.row && params.row.descuentoNum !== undefined
-                ? `$${params.row.descuentoNum.toLocaleString()}`
-                : "",
+              params.value ? `$${params.value.toLocaleString()}` : "",
           },
           {
-            field: "PRECIO FINAL",
+            field: "precioFinal",
             headerName: "Precio Final",
             flex: 1,
             type: "number",
-            valueGetter: (params) => params?.row?.precioFinalNum ?? 0, // ✅ Evita error
             renderCell: (params) =>
-              params.row && params.row.precioFinalNum !== undefined
-                ? `$${params.row.precioFinalNum.toLocaleString()}`
-                : "",
+              params.value ? `$${params.value.toLocaleString()}` : "",
           },
-          { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 },
+          { field: "ubicacion", headerName: "Ubicación", flex: 1 },
         ]}
         pageSize={10}
         autoHeight
