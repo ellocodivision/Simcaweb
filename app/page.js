@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Container, Typography, Button, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
