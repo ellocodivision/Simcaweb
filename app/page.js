@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { DataGrid } from "@mui/x-data-grid";
 import { Container, Typography, Select, MenuItem } from "@mui/material";
-import "../styles/globals.css"; // Importa los estilos
+import "./globals.css"; // ✅ Ruta correcta
 
 export default function Home() {
   const [data, setData] = useState([]);
