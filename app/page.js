@@ -24,13 +24,13 @@ export default function Home() {
 
           // ✅ Aplicar formato y manejar valores vacíos correctamente
           const formattedData = jsonData.map((row, index) => ({
-  id: index,
-  ...row,
-  "PRECIO DE LISTA": row["PRECIO DE LISTA"] != null ? `$${parseInt(row["PRECIO DE LISTA"]).toLocaleString()}` : "",
-  "DESCUENTO %": row["DESCUENTO %"] != null ? `${parseFloat(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1)}%` : "",
-  "DESCUENTO $": row["DESCUENTO $"] != null ? `$${parseInt(row["DESCUENTO $"]).toLocaleString()}` : "",
-  "PRECIO FINAL": row["PRECIO FINAL"] != null ? `$${parseInt(row["PRECIO FINAL"]).toLocaleString()}` : ""
-}));
+            id: index,
+            ...row,
+            "PRECIO DE LISTA": row["PRECIO DE LISTA"] != null ? `$${parseInt(row["PRECIO DE LISTA"]).toLocaleString()}` : "",
+            "DESCUENTO %": row["DESCUENTO %"] != null ? `${parseFloat(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1)}%` : "",
+            "DESCUENTO $": row["DESCUENTO $"] != null ? `$${parseInt(row["DESCUENTO $"]).toLocaleString()}` : "",
+            "PRECIO FINAL": row["PRECIO FINAL"] != null ? `$${parseInt(row["PRECIO FINAL"]).toLocaleString()}` : ""
+          }));
 
           setData(formattedData);
         };
