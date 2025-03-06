@@ -28,7 +28,7 @@ export default function Home() {
             id: index,
             desarrollo: row["DESARROLLO"] || "",
             unidad: row["UNIDAD"] || "",
-            recamaras: row["RECAMARAS"] || "",
+            recamaras: row["RECAMARAS"] ? row["RECAMARAS"].toString() : "", // Convertir en string
             ubicacion: row["UBICACIÓN"] || "",
             precioLista: Math.round(Number(row["PRECIO DE LISTA"]?.toString().replace(/[$,]/g, "")) || 0),
             descuentoPorcentaje: row["DESCUENTO %"]
