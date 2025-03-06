@@ -107,7 +107,7 @@ export default function Home() {
       <Typography variant="h5">📌 TULUM</Typography>
       <ul>
         <li><a href="https://drive.google.com/drive/folders/1Ka-9_TXx8hbKDNrtYM1A5iYCqvYyeNbI?usp=drive_link">Costa Caribe - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1Ka-9_TXx8hbKDNrtYM1A5iYCqvYyeNbI?usp=drive_link">Gran Tulum - Drive</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1HMDG7UBljBe9GwYwtvW8ZjmJpwylTca5?usp=drive_link">Gran Tulum - Drive</a></li>
         <li><a href="https://drive.google.com/drive/folders/1CX-qEyXVi_RqmRoeFl-Tq0sVNfKEUtrw?usp=drive_link">Natal - Drive</a></li>
       </ul>
       <Typography variant="h5">📞 Contacto</Typography>
