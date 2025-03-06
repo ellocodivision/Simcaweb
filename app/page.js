@@ -22,14 +22,14 @@ export default function Home() {
           const sheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-          // Aplicar formato a las columnas
+          // Aplicar formato y manejar celdas vacías
           const formattedData = jsonData.map((row, index) => ({
             id: index,
             ...row,
-            "PRECIO DE LISTA": `$${parseInt(row["PRECIO DE LISTA"]).toLocaleString()}`,
-            "DESCUENTO %": `${parseInt(row["DESCUENTO %"])}%`,
-            "DESCUENTO $": `$${parseInt(row["DESCUENTO $"]).toLocaleString()}`,
-            "PRECIO FINAL": parseInt(row["PRECIO FINAL"])
+            "PRECIO DE LISTA": row["PRECIO DE LISTA"] ? `$${parseInt(row["PRECIO DE LISTA"]).toLocaleString()}` : "",
+            "DESCUENTO %": row["DESCUENTO %"] ? `${parseInt(row["DESCUENTO %"])}%` : "",
+            "DESCUENTO $": row["DESCUENTO $"] ? `$${parseInt(row["DESCUENTO $"]).toLocaleString()}` : "",
+            "PRECIO FINAL": row["PRECIO FINAL"] ? parseInt(row["PRECIO FINAL"]) : ""
           }));
 
           setData(formattedData);
@@ -47,6 +47,9 @@ export default function Home() {
     "400k - 600k": [400000, 600000],
     "Más de 600k": [600000, Infinity]
   };
+
+  // Definir orden fijo para Recámaras
+  const recamarasOrdenadas = ["Studio", "Loft", "1", "2", "3", "4"];
 
   // Filtrar datos según selecciones
   const filteredData = data.filter((row) => {
@@ -82,7 +85,7 @@ export default function Home() {
 
         <Select value={recamaras} onChange={(e) => setRecamaras(e.target.value)} displayEmpty>
           <MenuItem value="">Filtrar por Recámaras</MenuItem>
-          {Array.from(new Set(data.map((d) => d.RECAMARAS.toString()))).map((r) => (
+          {recamarasOrdenadas.map((r) => (
             <MenuItem key={r} value={r}>{r}</MenuItem>
           ))}
         </Select>
@@ -108,9 +111,9 @@ export default function Home() {
             field: "PRECIO FINAL",
             headerName: "Precio Final",
             flex: 1,
-            valueFormatter: (params) => `$${parseInt(params.value).toLocaleString()}`
+            valueFormatter: (params) => params.value ? `$${parseInt(params.value).toLocaleString()}` : ""
           },
-          { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 } // 👈 Ahora la última columna
+          { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 } // 👈 Última columna
         ]}
         pageSize={10}
         autoHeight
