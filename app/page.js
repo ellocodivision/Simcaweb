@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { DataGrid } from "@mui/x-data-grid";
 import { Container, Typography, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
-import "./globals.css"; // ✅ Asegurar que el archivo exista
+import "./globals.css";
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -24,7 +24,6 @@ export default function Home() {
           const sheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-          // ✅ Formateamos los datos para evitar errores
           const formattedData = jsonData.map((row, index) => ({
             id: index,
             desarrollo: row["DESARROLLO"] || "",
@@ -47,7 +46,7 @@ export default function Home() {
       .catch((error) => console.error("Error cargando el archivo:", error));
   }, []);
 
-  // 📌 Filtrado de datos
+  // 📌 Aplicar los filtros en cascada
   useEffect(() => {
     let filtered = data;
 
@@ -78,6 +77,15 @@ export default function Home() {
     setFilteredData(filtered);
   }, [ubicacionFilter, desarrolloFilter, recamarasFilter, precioFilter, data]);
 
+  // 📌 Obtener valores únicos en base a los filtros activos
+  const ubicacionesDisponibles = [...new Set(data.map((row) => row.ubicacion))];
+  const desarrollosDisponibles = [
+    ...new Set(filteredData.map((row) => row.desarrollo)),
+  ];
+  const recamarasDisponibles = [
+    ...new Set(filteredData.map((row) => row.recamaras)),
+  ];
+
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
@@ -89,7 +97,7 @@ export default function Home() {
         <InputLabel>Filtrar por Ubicación</InputLabel>
         <Select value={ubicacionFilter} onChange={(e) => setUbicacionFilter(e.target.value)}>
           <MenuItem value="Todos">Todos</MenuItem>
-          {[...new Set(data.map((row) => row.ubicacion))].map((ubicacion) => (
+          {ubicacionesDisponibles.map((ubicacion) => (
             <MenuItem key={ubicacion} value={ubicacion}>
               {ubicacion}
             </MenuItem>
@@ -101,7 +109,7 @@ export default function Home() {
         <InputLabel>Filtrar por Desarrollo</InputLabel>
         <Select value={desarrolloFilter} onChange={(e) => setDesarrolloFilter(e.target.value)}>
           <MenuItem value="Todos">Todos</MenuItem>
-          {[...new Set(data.map((row) => row.desarrollo))].map((desarrollo) => (
+          {desarrollosDisponibles.map((desarrollo) => (
             <MenuItem key={desarrollo} value={desarrollo}>
               {desarrollo}
             </MenuItem>
@@ -113,7 +121,7 @@ export default function Home() {
         <InputLabel>Filtrar por Recámaras</InputLabel>
         <Select value={recamarasFilter} onChange={(e) => setRecamarasFilter(e.target.value)}>
           <MenuItem value="Todos">Todos</MenuItem>
-          {["Studio", "Loft", "1", "2", "3", "4"].map((rec) => (
+          {recamarasDisponibles.map((rec) => (
             <MenuItem key={rec} value={rec}>
               {rec}
             </MenuItem>
@@ -147,28 +155,21 @@ export default function Home() {
             headerName: "Precio de Lista",
             flex: 1,
             type: "number",
-            renderCell: (params) => `$${params.value.toFixed(2).toLocaleString()}`,
+            renderCell: (params) => `$${params.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
           },
           {
             field: "descuentoPorcentaje",
             headerName: "Descuento %",
             flex: 1,
             type: "number",
-            renderCell: (params) => `${params.value.toFixed(2)}%`,
+            renderCell: (params) => `${params.value}%`,
           },
           {
             field: "descuentoDinero",
             headerName: "Descuento $",
             flex: 1,
             type: "number",
-            renderCell: (params) => `$${params.value.toFixed(2).toLocaleString()}`,
-          },
-          {
-            field: "precioFinal",
-            headerName: "Precio Final",
-            flex: 1,
-            type: "number",
-            renderCell: (params) => `$${params.value.toFixed(2).toLocaleString()}`,
+            renderCell: (params) => `$${params.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
           },
           { field: "ubicacion", headerName: "Ubicación", flex: 1 },
         ]}
