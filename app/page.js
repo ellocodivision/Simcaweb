@@ -79,14 +79,11 @@ export default function Home() {
 
   // 📌 Obtener valores únicos en base a los filtros activos
   const ubicacionesDisponibles = [...new Set(data.map((row) => row.ubicacion))];
-  const desarrollosDisponibles = [
-    ...new Set(filteredData.map((row) => row.desarrollo)),
-  ];
+  const desarrollosDisponibles = [...new Set(filteredData.map((row) => row.desarrollo))];
 
-  // 📌 Ordenar Recámaras en el orden definido: STUDIO, LOFT, 1, 2, 3, 4
-  const recamarasDisponibles = ["STUDIO", "LOFT", "1", "2", "3", "4"].filter((r) =>
-    filteredData.some((row) => row.recamaras === r)
-  );
+  // 📌 Asegurar que el filtro de Recámaras tenga los valores correctos
+  const allRecamaras = ["STUDIO", "LOFT", "1", "2", "3", "4"];
+  const recamarasDisponibles = allRecamaras.filter((r) => data.some((row) => row.recamaras === r));
 
   // 📌 Función para quitar todos los filtros
   const resetFilters = () => {
@@ -171,6 +168,9 @@ export default function Home() {
           { field: "desarrollo", headerName: "Desarrollo", flex: 1 },
           { field: "unidad", headerName: "Unidad", flex: 1 },
           { field: "recamaras", headerName: "Recámaras", flex: 1 },
+          { field: "precioLista", headerName: "Precio de Lista", flex: 1, type: "number", renderCell: (params) => `$${params.value.toLocaleString()}` },
+          { field: "descuentoPorcentaje", headerName: "Descuento %", flex: 1, type: "number", renderCell: (params) => `${params.value}%` },
+          { field: "descuentoDinero", headerName: "Descuento $", flex: 1, type: "number", renderCell: (params) => `$${params.value.toLocaleString()}` },
           { field: "precioFinal", headerName: "Precio Final", flex: 1, type: "number", renderCell: (params) => `$${params.value.toLocaleString()}` },
           { field: "ubicacion", headerName: "Ubicación", flex: 1 },
         ]}
