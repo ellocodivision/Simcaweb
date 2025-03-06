@@ -19,21 +19,21 @@ export default function Home() {
           const sheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-          // ✅ Convertir datos asegurando que nunca sean undefined o NaN
+          // ✅ Convertir valores a números asegurando que no sean NaN
           const formattedData = jsonData.map((row, index) => ({
             id: index,
             ...row,
             precioListaNum: row["PRECIO DE LISTA"]
-              ? parseInt(row["PRECIO DE LISTA"].toString().replace(/[$,]/g, "")) || 0
+              ? Number(row["PRECIO DE LISTA"].toString().replace(/[$,]/g, "")) || 0
               : 0,
             descuentoNum: row["DESCUENTO $"]
-              ? parseInt(row["DESCUENTO $"].toString().replace(/[$,]/g, "")) || 0
+              ? Number(row["DESCUENTO $"].toString().replace(/[$,]/g, "")) || 0
               : 0,
             precioFinalNum: row["PRECIO FINAL"]
-              ? parseInt(row["PRECIO FINAL"].toString().replace(/[$,]/g, "")) || 0
+              ? Number(row["PRECIO FINAL"].toString().replace(/[$,]/g, "")) || 0
               : 0,
             descuentoPorcentaje: row["DESCUENTO %"]
-              ? parseFloat(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1)
+              ? Number(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1)
               : 0, // ✅ Convierte 0.1 en 10%
           }));
 
@@ -42,9 +42,6 @@ export default function Home() {
         reader.readAsBinaryString(blob);
       });
   }, []);
-
-  // ✅ Función segura para evitar undefined en valueGetter
-  const safeGetter = (params, field) => (params?.row && params.row[field] !== undefined ? params.row[field] : 0);
 
   return (
     <Container>
@@ -64,36 +61,36 @@ export default function Home() {
             headerName: "Precio de Lista",
             flex: 1,
             type: "number", // ✅ Indica que es numérico para ordenación correcta
-            valueGetter: (params) => safeGetter(params, "precioListaNum"),
+            valueGetter: (params) => params.row?.precioListaNum ?? 0,
             renderCell: (params) =>
-              params?.row ? `$${safeGetter(params, "precioListaNum").toLocaleString()}` : "",
+              params.row ? `$${params.row.precioListaNum.toLocaleString()}` : "",
           },
           {
             field: "DESCUENTO %",
             headerName: "Descuento %",
             flex: 1,
             type: "number", // ✅ Asegura ordenación correcta
-            valueGetter: (params) => safeGetter(params, "descuentoPorcentaje"),
+            valueGetter: (params) => params.row?.descuentoPorcentaje ?? 0,
             renderCell: (params) =>
-              params?.row ? `${safeGetter(params, "descuentoPorcentaje")}%` : "",
+              params.row ? `${params.row.descuentoPorcentaje.toFixed(0)}%` : "",
           },
           {
             field: "DESCUENTO $",
             headerName: "Descuento $",
             flex: 1,
             type: "number", // ✅ Asegura que se ordene correctamente
-            valueGetter: (params) => safeGetter(params, "descuentoNum"),
+            valueGetter: (params) => params.row?.descuentoNum ?? 0,
             renderCell: (params) =>
-              params?.row ? `$${safeGetter(params, "descuentoNum").toLocaleString()}` : "",
+              params.row ? `$${params.row.descuentoNum.toLocaleString()}` : "",
           },
           {
             field: "PRECIO FINAL",
             headerName: "Precio Final",
             flex: 1,
             type: "number", // ✅ Asegura que se ordene correctamente
-            valueGetter: (params) => safeGetter(params, "precioFinalNum"),
+            valueGetter: (params) => params.row?.precioFinalNum ?? 0,
             renderCell: (params) =>
-              params?.row ? `$${safeGetter(params, "precioFinalNum").toLocaleString()}` : "",
+              params.row ? `$${params.row.precioFinalNum.toLocaleString()}` : "",
           },
           { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 }, // Última columna
         ]}
