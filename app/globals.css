@@ -1,10 +1,14 @@
-/* ✅ Cambiar el fondo con la imagen que subiste */
+/* ✅ Fondo ajustado al tamaño de la pantalla del usuario */
 body {
-  background-image: url("/tesst_page-0001.jpg");
-  background-size: cover; /* La imagen se ajusta automáticamente al tamaño de la pantalla */
+  background-image: url("/tesst_page-0001.jpg"); /* Ruta correcta de la imagen */
+  background-size: cover; /* Ajusta la imagen para cubrir todo el viewport */
   background-position: center; /* Centra la imagen */
-  background-repeat: no-repeat; /* Evita que se repita */
-  background-attachment: fixed; /* La imagen se mantiene fija al hacer scroll */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+  background-attachment: fixed; /* Mantiene la imagen fija al hacer scroll */
+  height: 100vh; /* Asegura que el fondo cubra toda la pantalla */
+  width: 100vw; /* Asegura que se expanda al ancho completo */
+  margin: 0;
+  padding: 0;
 }
 
 
