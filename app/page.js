@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { DataGrid } from "@mui/x-data-grid";
 import { Container, Typography, Select, MenuItem } from "@mui/material";
+import "../styles/globals.css"; // Importa los estilos
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -11,10 +12,6 @@ export default function Home() {
   const [recamaras, setRecamaras] = useState("");
   const [precioFinal, setPrecioFinal] = useState("Todos");
 
-body {
-  background-color: #e0ded6; /* 👈 Fondo gris claro neutro */
-  color: #333; /* 👈 Texto oscuro para mejor visibilidad */
-}
   useEffect(() => {
     fetch("/data/nuevo_inventario.xlsx")
       .then((response) => response.blob())
@@ -55,13 +52,19 @@ body {
   // Definir orden fijo para Recámaras
   const recamarasOrdenadas = ["Studio", "Loft", "1", "2", "3", "4"];
 
+  // 🔹 Filtrar desarrollos según la ubicación seleccionada
+  const desarrollosFiltrados = ubicacion
+    ? Array.from(new Set(data.filter((d) => d.UBICACIÓN === ubicacion).map((d) => d.DESARROLLO)))
+    : Array.from(new Set(data.map((d) => d.DESARROLLO)));
+
   // Filtrar datos según selecciones
   const filteredData = data.filter((row) => {
     return (
       (ubicacion === "" || row.UBICACIÓN === ubicacion) &&
       (desarrollo === "" || row.DESARROLLO === desarrollo) &&
       (recamaras === "" || row.RECAMARAS.toString() === recamaras) &&
-      (row["PRECIO FINAL"].replace("$", "").replace(",", "") >= priceRanges[precioFinal][0] && row["PRECIO FINAL"].replace("$", "").replace(",", "") <= priceRanges[precioFinal][1])
+      (row["PRECIO FINAL"].replace("$", "").replace(",", "") >= priceRanges[precioFinal][0] &&
+      row["PRECIO FINAL"].replace("$", "").replace(",", "") <= priceRanges[precioFinal][1])
     );
   });
 
@@ -72,7 +75,7 @@ body {
       </Typography>
 
       {/* Filtros */}
-      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+      <div className="filters">
         <Select value={ubicacion} onChange={(e) => setUbicacion(e.target.value)} displayEmpty>
           <MenuItem value="">Filtrar por Ubicación</MenuItem>
           {Array.from(new Set(data.map((d) => d.UBICACIÓN))).map((u) => (
@@ -82,7 +85,7 @@ body {
 
         <Select value={desarrollo} onChange={(e) => setDesarrollo(e.target.value)} displayEmpty>
           <MenuItem value="">Filtrar por Desarrollo</MenuItem>
-          {Array.from(new Set(data.map((d) => d.DESARROLLO))).map((d) => (
+          {desarrollosFiltrados.map((d) => (
             <MenuItem key={d} value={d}>{d}</MenuItem>
           ))}
         </Select>
