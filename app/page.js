@@ -43,6 +43,9 @@ export default function Home() {
       });
   }, []);
 
+  // ✅ Función segura para evitar undefined en valueGetter
+  const safeGetter = (params, field) => (params?.row && params.row[field] !== undefined ? params.row[field] : 0);
+
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
@@ -61,36 +64,36 @@ export default function Home() {
             headerName: "Precio de Lista",
             flex: 1,
             type: "number", // ✅ Indica que es numérico para ordenación correcta
-            valueGetter: (params) => params.row?.precioListaNum ?? 0,
+            valueGetter: (params) => safeGetter(params, "precioListaNum"),
             renderCell: (params) =>
-              params.row ? `$${params.row.precioListaNum.toLocaleString()}` : "",
+              params?.row ? `$${safeGetter(params, "precioListaNum").toLocaleString()}` : "",
           },
           {
             field: "DESCUENTO %",
             headerName: "Descuento %",
             flex: 1,
             type: "number", // ✅ Asegura ordenación correcta
-            valueGetter: (params) => params.row?.descuentoPorcentaje ?? 0,
+            valueGetter: (params) => safeGetter(params, "descuentoPorcentaje"),
             renderCell: (params) =>
-              params.row ? `${params.row.descuentoPorcentaje}%` : "",
+              params?.row ? `${safeGetter(params, "descuentoPorcentaje")}%` : "",
           },
           {
             field: "DESCUENTO $",
             headerName: "Descuento $",
             flex: 1,
             type: "number", // ✅ Asegura que se ordene correctamente
-            valueGetter: (params) => params.row?.descuentoNum ?? 0,
+            valueGetter: (params) => safeGetter(params, "descuentoNum"),
             renderCell: (params) =>
-              params.row ? `$${params.row.descuentoNum.toLocaleString()}` : "",
+              params?.row ? `$${safeGetter(params, "descuentoNum").toLocaleString()}` : "",
           },
           {
             field: "PRECIO FINAL",
             headerName: "Precio Final",
             flex: 1,
             type: "number", // ✅ Asegura que se ordene correctamente
-            valueGetter: (params) => params.row?.precioFinalNum ?? 0,
+            valueGetter: (params) => safeGetter(params, "precioFinalNum"),
             renderCell: (params) =>
-              params.row ? `$${params.row.precioFinalNum.toLocaleString()}` : "",
+              params?.row ? `$${safeGetter(params, "precioFinalNum").toLocaleString()}` : "",
           },
           { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 }, // Última columna
         ]}
