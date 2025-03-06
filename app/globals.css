@@ -1,17 +1,12 @@
-/* ✅ Evitar problemas con modo oscuro */
+/* ✅ Cambiar el fondo con la imagen que subiste */
 body {
-  background-color: #F5F5F5; /* Fondo gris claro */
-  color: #333; /* Texto oscuro */
-  font-family: Arial, sans-serif;
-  padding: 20px;
-}
-
-/* ✅ Si quieres una imagen de fondo, agrégala en public/images/fondo.jpg */
-body {
-  background-image: url("/images/fondo.jpg"); 
+  background-image: url("/tesst_page-0001.jpg"); /* Ruta relativa a la carpeta public */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  color: #333; /* Texto oscuro */
+  font-family: Arial, sans-serif;
+  padding: 20px;
 }
 
 /* ✅ Estilo de filtros */
