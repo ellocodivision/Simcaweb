@@ -22,14 +22,14 @@ export default function Home() {
           const sheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-          // Aplicar formato y manejar celdas vacías
+          // ✅ Aplicar formato y manejar valores vacíos correctamente
           const formattedData = jsonData.map((row, index) => ({
             id: index,
             ...row,
-            "PRECIO DE LISTA": row["PRECIO DE LISTA"] ? `$${parseInt(row["PRECIO DE LISTA"]).toLocaleString()}` : "",
-            "DESCUENTO %": row["DESCUENTO %"] ? `${parseInt(row["DESCUENTO %"])}%` : "",
-            "DESCUENTO $": row["DESCUENTO $"] ? `$${parseInt(row["DESCUENTO $"]).toLocaleString()}` : "",
-            "PRECIO FINAL": row["PRECIO FINAL"] ? parseInt(row["PRECIO FINAL"]) : ""
+            "PRECIO DE LISTA": row["PRECIO DE LISTA"] != null ? `$${parseInt(row["PRECIO DE LISTA"]).toLocaleString()}` : "",
+            "DESCUENTO %": row["DESCUENTO %"] != null ? `${parseInt(row["DESCUENTO %"])}%` : "",
+            "DESCUENTO $": row["DESCUENTO $"] != null ? `$${parseInt(row["DESCUENTO $"]).toLocaleString()}` : "",
+            "PRECIO FINAL": row["PRECIO FINAL"] != null ? `$${parseInt(row["PRECIO FINAL"]).toLocaleString()}` : ""
           }));
 
           setData(formattedData);
@@ -57,7 +57,7 @@ export default function Home() {
       (ubicacion === "" || row.UBICACIÓN === ubicacion) &&
       (desarrollo === "" || row.DESARROLLO === desarrollo) &&
       (recamaras === "" || row.RECAMARAS.toString() === recamaras) &&
-      (row["PRECIO FINAL"] >= priceRanges[precioFinal][0] && row["PRECIO FINAL"] <= priceRanges[precioFinal][1])
+      (row["PRECIO FINAL"].replace("$", "").replace(",", "") >= priceRanges[precioFinal][0] && row["PRECIO FINAL"].replace("$", "").replace(",", "") <= priceRanges[precioFinal][1])
     );
   });
 
@@ -107,13 +107,8 @@ export default function Home() {
           { field: "PRECIO DE LISTA", headerName: "Precio de Lista", flex: 1 },
           { field: "DESCUENTO %", headerName: "Descuento %", flex: 1 },
           { field: "DESCUENTO $", headerName: "Descuento $", flex: 1 },
-          { 
-            field: "PRECIO FINAL",
-            headerName: "Precio Final",
-            flex: 1,
-            valueFormatter: (params) => params.value ? `$${parseInt(params.value).toLocaleString()}` : ""
-          },
-          { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 } // 👈 Última columna
+          { field: "PRECIO FINAL", headerName: "Precio Final", flex: 1 },
+          { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 } // Última columna
         ]}
         pageSize={10}
         autoHeight
