@@ -89,47 +89,42 @@ export default function Home() {
         🏢 DESARROLLOS SIMCA - Inventario Online
       </Typography>
 
-      <DataGrid 
-        rows={filteredData} 
-        columns={[
-          { field: "desarrollo", headerName: "Desarrollo", flex: 1 },
-          { field: "unidad", headerName: "Unidad", flex: 1 },
-          { field: "recamaras", headerName: "Recámaras", flex: 1 },
-          { field: "precioLista", headerName: "Precio de Lista", flex: 1, renderCell: (params) => `$${params.value.toLocaleString()}` },
-          { field: "descuentoPorcentaje", headerName: "Descuento %", flex: 1, renderCell: (params) => `${params.value}%` },
-          { field: "descuentoDinero", headerName: "Descuento $", flex: 1, renderCell: (params) => `$${params.value.toLocaleString()}` },
-          { field: "precioFinal", headerName: "Precio Final", flex: 1, renderCell: (params) => `$${params.value.toLocaleString()}` },
-          { field: "ubicacion", headerName: "Ubicación", flex: 1 }
-        ]} 
-        pageSize={10} 
-        autoHeight 
-      />
+      {/* 🚀 HACEMOS QUE LA TABLA SEA RESPONSIVE */}
+      <div style={{ width: "100%", overflowX: "auto" }}>
+        <div style={{ minWidth: "800px" }}>
+          <DataGrid 
+            rows={filteredData} 
+            columns={[
+              { field: "desarrollo", headerName: "Desarrollo", flex: 1, minWidth: 150 },
+              { field: "unidad", headerName: "Unidad", flex: 1, minWidth: 100 },
+              { field: "recamaras", headerName: "Recámaras", flex: 1, minWidth: 80 },
+              { field: "precioLista", headerName: "Precio de Lista", flex: 1, minWidth: 130, renderCell: (params) => `$${params.value.toLocaleString()}` },
+              { field: "descuentoPorcentaje", headerName: "Descuento %", flex: 1, minWidth: 100, renderCell: (params) => `${params.value}%` },
+              { field: "descuentoDinero", headerName: "Descuento $", flex: 1, minWidth: 130, renderCell: (params) => `$${params.value.toLocaleString()}` },
+              { field: "precioFinal", headerName: "Precio Final", flex: 1, minWidth: 130, renderCell: (params) => `$${params.value.toLocaleString()}` },
+              { field: "ubicacion", headerName: "Ubicación", flex: 1, minWidth: 150 }
+            ]} 
+            pageSize={10} 
+            autoHeight 
+          />
+        </div>
+      </div>
 
       {/* 📌 Sección de Enlaces */}
       <Typography variant="h5" style={{ marginTop: "20px" }}>📌 PLAYA DEL CARMEN</Typography>
       <ul>
-        <li><a href="https://drive.google.com/drive/folders/1wLmmckCcHJZpo4epx1wOL9y29ZVr1CRW?usp=drive_link">Ceiba - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1iZ6IGvc9g-N9bdQ62N7_XKWxtSWtEmHW?usp=drive_link">Cruz con Mar - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1iYveTUNluxpXMXIzNkrTM1DotXeb_y2D?usp=drive_link">Ipana - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/12yciY02hANBw9m6bk80IeA9pLeAyNZtt?usp=drive_link">Maresol - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1iP7Qeq2sYPf1sTOs85OHs3wNpGqFaWtk?usp=drive_link">Marila - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1aBGyq-HYte_2NeShwYZNvBwOaNgkhJGQ?usp=drive_link">Saint Marine - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1iLgemRqqQEcayfTbZjfWr4jkumvj_797?usp=drive_link">Serenada - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1gNjYsbSaZbDwH_51Xp7d6Wwsn6rIhRDy?usp=drive_link">Singular Joy - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1-1vnJQG2totiL_odvm_CJoNCp6GvVZF6?usp=drive_link">Solar estudios - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1CkeGNWApzo3Dwsh5JsBgXVrYtjfo6EfL?usp=drive_link">Solar midtown - Drive</a></li>
-
+        <li><a href="https://drive.google.com/drive/folders/1wLmmckCcHJZpo4epx1wOL9y29ZVr1CRW">Ceiba - Drive</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1iZ6IGvc9g-N9bdQ62N7_XKWxtSWtEmHW">Cruz con Mar - Drive</a></li>
       </ul>
 
       <Typography variant="h5">📌 TULUM</Typography>
       <ul>
-        <li><a href="https://drive.google.com/drive/folders/1Ka-9_TXx8hbKDNrtYM1A5iYCqvYyeNbI?usp=drive_link">Costa Caribe - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1HMDG7UBljBe9GwYwtvW8ZjmJpwylTca5?usp=drive_link">Gran Tulum - Drive</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1CX-qEyXVi_RqmRoeFl-Tq0sVNfKEUtrw?usp=drive_link">Natal - Drive</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1Ka-9_TXx8hbKDNrtYM1A5iYCqvYyeNbI">Costa Caribe - Drive</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1HMDG7UBljBe9GwYwtvW8ZjmJpwylTca5">Gran Tulum - Drive</a></li>
       </ul>
 
       <Typography variant="h5">📞 Contacto</Typography>
-      <a href="https://drive.google.com/file/d/1xzsKBinrBmRFkbZf0_L_rFIPr4FfRgx9/view?usp=drive_link">CONTACTO</a>
+      <a href="https://drive.google.com/file/d/1xzsKBinrBmRFkbZf0_L_rFIPr4FfRgx9">CONTACTO</a>
     </Container>
   );
 }
