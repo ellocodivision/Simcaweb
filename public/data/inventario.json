@@ -11,7 +11,7 @@ export default function Home() {
   const [recamaras, setRecamaras] = useState("");
 
   useEffect(() => {
-    fetch("/data/inventario.xlsx") // Cargar el archivo Excel
+    fetch("/data/nuevo_inventario.xlsx") // Cargar el archivo Excel
       .then((response) => response.blob()) // Convertirlo en Blob
       .then((blob) => {
         const reader = new FileReader();
