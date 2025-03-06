@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Container, Typography, Select, MenuItem } from "@mui/material";
+import * as XLSX from "xlsx"; // Importar la librería para leer Excel
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -10,9 +11,19 @@ export default function Home() {
   const [recamaras, setRecamaras] = useState("");
 
   useEffect(() => {
-    fetch("/data/inventario.json")
-      .then((res) => res.json())
-      .then((data) => setData(data));
+    fetch("/data/inventario.xlsx") // Cargar el archivo Excel
+      .then((response) => response.blob()) // Convertirlo en Blob
+      .then((blob) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const workbook = XLSX.read(e.target.result, { type: "binary" });
+          const sheetName = workbook.SheetNames[0]; // Tomar la primera hoja
+          const sheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(sheet); // Convertir Excel a JSON
+          setData(jsonData);
+        };
+        reader.readAsBinaryString(blob);
+      });
   }, []);
 
   const filteredData = data.filter((row) => {
