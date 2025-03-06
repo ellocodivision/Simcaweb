@@ -32,6 +32,9 @@ export default function Home() {
             precioFinalNum: row["PRECIO FINAL"]
               ? parseInt(row["PRECIO FINAL"].toString().replace(/[$,]/g, "")) || 0
               : 0,
+            descuentoPorcentaje: row["DESCUENTO %"]
+              ? parseFloat(row["DESCUENTO %"]) * (row["DESCUENTO %"] < 1 ? 100 : 1)
+              : 0, // ✅ Convierte 0.1 en 10%
           }));
 
           setData(formattedData);
@@ -39,9 +42,6 @@ export default function Home() {
         reader.readAsBinaryString(blob);
       });
   }, []);
-
-  // ✅ Asegurar que los valores siempre existen
-  const safeGetter = (params, field) => params?.row?.[field] ?? 0;
 
   return (
     <Container>
@@ -60,33 +60,37 @@ export default function Home() {
             field: "PRECIO DE LISTA",
             headerName: "Precio de Lista",
             flex: 1,
-            sortComparator: (a, b) => a - b,
-            valueGetter: (params) => safeGetter(params, "precioListaNum"),
+            type: "number", // ✅ Indica que es numérico para ordenación correcta
+            valueGetter: (params) => params.row?.precioListaNum ?? 0,
             renderCell: (params) =>
-              params.row ? `$${safeGetter(params, "precioListaNum").toLocaleString()}` : "",
+              params.row ? `$${params.row.precioListaNum.toLocaleString()}` : "",
           },
           {
             field: "DESCUENTO %",
             headerName: "Descuento %",
             flex: 1,
+            type: "number", // ✅ Asegura ordenación correcta
+            valueGetter: (params) => params.row?.descuentoPorcentaje ?? 0,
+            renderCell: (params) =>
+              params.row ? `${params.row.descuentoPorcentaje}%` : "",
           },
           {
             field: "DESCUENTO $",
             headerName: "Descuento $",
             flex: 1,
-            sortComparator: (a, b) => a - b,
-            valueGetter: (params) => safeGetter(params, "descuentoNum"),
+            type: "number", // ✅ Asegura que se ordene correctamente
+            valueGetter: (params) => params.row?.descuentoNum ?? 0,
             renderCell: (params) =>
-              params.row ? `$${safeGetter(params, "descuentoNum").toLocaleString()}` : "",
+              params.row ? `$${params.row.descuentoNum.toLocaleString()}` : "",
           },
           {
             field: "PRECIO FINAL",
             headerName: "Precio Final",
             flex: 1,
-            sortComparator: (a, b) => a - b,
-            valueGetter: (params) => safeGetter(params, "precioFinalNum"),
+            type: "number", // ✅ Asegura que se ordene correctamente
+            valueGetter: (params) => params.row?.precioFinalNum ?? 0,
             renderCell: (params) =>
-              params.row ? `$${safeGetter(params, "precioFinalNum").toLocaleString()}` : "",
+              params.row ? `$${params.row.precioFinalNum.toLocaleString()}` : "",
           },
           { field: "UBICACIÓN", headerName: "Ubicación", flex: 1 }, // Última columna
         ]}
