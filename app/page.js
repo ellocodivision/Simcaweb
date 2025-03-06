@@ -11,6 +11,10 @@ export default function Home() {
   const [recamaras, setRecamaras] = useState("");
   const [precioFinal, setPrecioFinal] = useState("Todos");
 
+body {
+  background-color: #e0ded6; /* 👈 Fondo gris claro neutro */
+  color: #333; /* 👈 Texto oscuro para mejor visibilidad */
+}
   useEffect(() => {
     fetch("/data/nuevo_inventario.xlsx")
       .then((response) => response.blob())
